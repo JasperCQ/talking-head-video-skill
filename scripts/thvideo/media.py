@@ -22,7 +22,7 @@ def ffmpeg():
 def run(arguments):
     try:
         return subprocess.run([ffmpeg(), "-hide_banner", "-nostdin", *map(str, arguments)],
-                              check=True, capture_output=True, text=True)
+                              check=True, capture_output=True, text=True, encoding="utf-8", errors="replace")
     except subprocess.CalledProcessError as exc:
         raise UserError("媒体处理失败：" + exc.stderr[-1200:]) from exc
 
@@ -33,7 +33,7 @@ def duration(path):
         with wave.open(str(path), "rb") as audio:
             return audio.getnframes() / audio.getframerate()
     result = subprocess.run([ffmpeg(), "-hide_banner", "-nostdin", "-i", str(path)],
-                            capture_output=True, text=True)
+                            capture_output=True, text=True, encoding="utf-8", errors="replace")
     match = re.search(r"Duration:\s*(\d+):(\d+):([\d.]+)", result.stderr)
     if not match:
         raise UserError(f"无法读取媒体时长：{path.name}")
@@ -43,7 +43,7 @@ def duration(path):
 
 def video_info(path):
     result = subprocess.run([ffmpeg(), "-hide_banner", "-nostdin", "-i", str(path)],
-                            capture_output=True, text=True)
+                            capture_output=True, text=True, encoding="utf-8", errors="replace")
     match = re.search(r"Video:.*?\b(\d{2,5})x(\d{2,5})\b.*?([\d.]+) fps", result.stderr)
     if not match:
         raise UserError("无法读取视频尺寸和帧率。")

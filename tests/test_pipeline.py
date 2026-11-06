@@ -5,6 +5,7 @@ import math
 import os
 import shutil
 import struct
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -251,6 +252,14 @@ class PipelineTests(unittest.TestCase):
 
 
 class ContractTests(unittest.TestCase):
+    def test_cli_json_is_utf8_even_with_ascii_process_default(self):
+        script = Path(__file__).resolve().parents[1] / "scripts/talking_head.py"
+        with tempfile.TemporaryDirectory() as temp:
+            result = subprocess.run([sys.executable, str(script), "--config", str(Path(temp) / "config.json"), "doctor"],
+                                    env={**os.environ, "PYTHONIOENCODING": "ascii"}, capture_output=True, check=True)
+            output = json.loads(result.stdout.decode("utf-8"))
+            self.assertIn("本检查离线运行", output["note"])
+
     def test_current_query_contract_states(self):
         hub = RunningHub({})
         for status, expected in [("QUEUED", "running"), ("RUNNING", "running"), ("FAILED", "failed"), ("SUCCESS", "succeeded")]:
