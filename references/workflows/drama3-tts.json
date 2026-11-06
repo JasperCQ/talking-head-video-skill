@@ -1,0 +1,1260 @@
+{
+  "revision": 0,
+  "last_node_id": 17,
+  "last_link_id": 17,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "T8DramaLoader",
+      "pos": [
+        700,
+        -430
+      ],
+      "size": [
+        370,
+        430
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "model",
+          "name": "model",
+          "type": "COMBO",
+          "widget": {
+            "name": "model"
+          },
+          "link": null
+        },
+        {
+          "label": "codec",
+          "name": "codec",
+          "type": "COMBO",
+          "widget": {
+            "name": "codec"
+          },
+          "link": null
+        },
+        {
+          "label": "expert_cache_gb",
+          "name": "expert_cache_gb",
+          "type": "FLOAT",
+          "widget": {
+            "name": "expert_cache_gb"
+          },
+          "link": null
+        },
+        {
+          "label": "gdn_backend",
+          "name": "gdn_backend",
+          "type": "COMBO",
+          "widget": {
+            "name": "gdn_backend"
+          },
+          "link": null
+        },
+        {
+          "label": "model_path",
+          "name": "model_path",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "model_path"
+          },
+          "link": null
+        },
+        {
+          "label": "codec_path",
+          "name": "codec_path",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "codec_path"
+          },
+          "link": null
+        },
+        {
+          "label": "text_head_path",
+          "name": "text_head_path",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "text_head_path"
+          },
+          "link": null
+        },
+        {
+          "label": "line_head_path",
+          "name": "line_head_path",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "line_head_path"
+          },
+          "link": null
+        },
+        {
+          "label": "scene_head_mode",
+          "name": "scene_head_mode",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "scene_head_mode"
+          },
+          "link": null
+        },
+        {
+          "label": "moe_backend",
+          "name": "moe_backend",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "moe_backend"
+          },
+          "link": null
+        },
+        {
+          "label": "cuda_graph",
+          "name": "cuda_graph",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "cuda_graph"
+          },
+          "link": null
+        },
+        {
+          "label": "expert_placement",
+          "name": "expert_placement",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "expert_placement"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "label": "DRAMA3_T8_ENGINE",
+          "name": "DRAMA3_T8_ENGINE",
+          "type": "DRAMA3_T8_ENGINE",
+          "links": [
+            1,
+            5,
+            7
+          ]
+        }
+      ],
+      "widgets_values": [
+        "drama3-fp8.safetensors",
+        "drama3-codec.safetensors",
+        12,
+        "torch",
+        "",
+        "",
+        "",
+        "",
+        "compact",
+        "auto",
+        true,
+        "ram"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "LoadAudio",
+      "pos": [
+        -620,
+        560
+      ],
+      "size": [
+        370,
+        260
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "audio",
+          "name": "audio",
+          "type": "COMBO",
+          "widget": {
+            "name": "audio"
+          },
+          "link": null
+        },
+        {
+          "label": "audioUI",
+          "name": "audioUI",
+          "type": "AUDIO_UI",
+          "widget": {
+            "name": "audioUI"
+          },
+          "link": null
+        },
+        {
+          "label": "upload",
+          "name": "upload",
+          "type": "AUDIOUPLOAD",
+          "widget": {
+            "name": "upload"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "label": "AUDIO",
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            2,
+            14
+          ]
+        }
+      ],
+      "title": "Reference voice",
+      "widgets_values": [
+        "reference-voice.flac",
+        null,
+        null
+      ]
+    },
+    {
+      "id": 3,
+      "type": "T8DramaReference",
+      "pos": [
+        300,
+        100
+      ],
+      "size": [
+        370,
+        260
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "engine",
+          "name": "engine",
+          "type": "DRAMA3_T8_ENGINE",
+          "link": 1
+        },
+        {
+          "label": "audio",
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 2
+        },
+        {
+          "label": "previous",
+          "name": "previous",
+          "shape": 7,
+          "type": "DRAMA3_T8_REFERENCES",
+          "link": null
+        },
+        {
+          "label": "transcript",
+          "name": "transcript",
+          "type": "STRING",
+          "widget": {
+            "name": "transcript"
+          },
+          "link": 16
+        },
+        {
+          "label": "name",
+          "name": "name",
+          "type": "STRING",
+          "widget": {
+            "name": "name"
+          },
+          "link": null
+        },
+        {
+          "label": "trim_silence",
+          "name": "trim_silence",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "trim_silence"
+          },
+          "link": null
+        },
+        {
+          "label": "normalize",
+          "name": "normalize",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "normalize"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "label": "DRAMA3_T8_REFERENCES",
+          "name": "DRAMA3_T8_REFERENCES",
+          "type": "DRAMA3_T8_REFERENCES",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "widgets_values": [
+        "",
+        "Presenter",
+        false,
+        false
+      ],
+      "title": "Reference voice encoding"
+    },
+    {
+      "id": 4,
+      "type": "T8DramaSession",
+      "pos": [
+        720,
+        100
+      ],
+      "size": [
+        370,
+        220
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "references",
+          "name": "references",
+          "shape": 7,
+          "type": "DRAMA3_T8_REFERENCES",
+          "link": 3
+        },
+        {
+          "label": "direction",
+          "name": "direction",
+          "type": "STRING",
+          "widget": {
+            "name": "direction"
+          },
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "label": "DRAMA3_T8_SESSION",
+          "name": "DRAMA3_T8_SESSION",
+          "type": "DRAMA3_T8_SESSION",
+          "links": [
+            4,
+            6
+          ]
+        }
+      ],
+      "widgets_values": [
+        "Natural Mandarin narration."
+      ],
+      "title": "会话 Session"
+    },
+    {
+      "id": 5,
+      "type": "T8DramaGenerate",
+      "pos": [
+        1140,
+        40
+      ],
+      "size": [
+        370,
+        540
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "engine",
+          "name": "engine",
+          "type": "DRAMA3_T8_ENGINE",
+          "link": 5
+        },
+        {
+          "label": "session",
+          "name": "session",
+          "shape": 7,
+          "type": "DRAMA3_T8_SESSION",
+          "link": 6
+        },
+        {
+          "label": "mode",
+          "name": "mode",
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null
+        },
+        {
+          "label": "text",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": 11
+        },
+        {
+          "label": "lookahead",
+          "name": "lookahead",
+          "type": "STRING",
+          "widget": {
+            "name": "lookahead"
+          },
+          "link": null
+        },
+        {
+          "label": "chunk_bytes",
+          "name": "chunk_bytes",
+          "type": "INT",
+          "widget": {
+            "name": "chunk_bytes"
+          },
+          "link": null
+        },
+        {
+          "label": "seed",
+          "name": "seed",
+          "type": "INT",
+          "widget": {
+            "name": "seed"
+          },
+          "link": null
+        },
+        {
+          "label": "temperature",
+          "name": "temperature",
+          "type": "FLOAT",
+          "widget": {
+            "name": "temperature"
+          },
+          "link": null
+        },
+        {
+          "label": "top_p",
+          "name": "top_p",
+          "type": "FLOAT",
+          "widget": {
+            "name": "top_p"
+          },
+          "link": null
+        },
+        {
+          "label": "top_k",
+          "name": "top_k",
+          "type": "INT",
+          "widget": {
+            "name": "top_k"
+          },
+          "link": null
+        },
+        {
+          "label": "max_frames",
+          "name": "max_frames",
+          "type": "INT",
+          "widget": {
+            "name": "max_frames"
+          },
+          "link": null
+        },
+        {
+          "label": "seed_text",
+          "name": "seed_text",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "seed_text"
+          },
+          "link": null
+        },
+        {
+          "label": "opening_retries",
+          "name": "opening_retries",
+          "shape": 7,
+          "type": "INT",
+          "widget": {
+            "name": "opening_retries"
+          },
+          "link": null
+        },
+        {
+          "label": "sampling_preset",
+          "name": "sampling_preset",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "sampling_preset"
+          },
+          "link": null
+        },
+        {
+          "label": "replace_delivery_tags",
+          "name": "replace_delivery_tags",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "replace_delivery_tags"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "label": "DRAMA3_T8_SESSION",
+          "name": "DRAMA3_T8_SESSION",
+          "type": "DRAMA3_T8_SESSION",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "widgets_values": [
+        "speech",
+        "你好，这是本地语音测试。",
+        "",
+        1000,
+        42,
+        "fixed",
+        0.7,
+        0.7,
+        30,
+        1000,
+        "",
+        0,
+        "custom",
+        false
+      ],
+      "title": "生成 Generate（speech）"
+    },
+    {
+      "id": 6,
+      "type": "T8DramaSaveSession",
+      "pos": [
+        720,
+        380
+      ],
+      "size": [
+        370,
+        200
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "session",
+          "name": "session",
+          "type": "DRAMA3_T8_SESSION",
+          "link": 4
+        },
+        {
+          "label": "name",
+          "name": "name",
+          "type": "STRING",
+          "widget": {
+            "name": "name"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [],
+      "title": "可选支路：保存参考音色库",
+      "widgets_values": [
+        "talking-head/session"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "T8DramaDecode",
+      "pos": [
+        1560,
+        100
+      ],
+      "size": [
+        370,
+        260
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "engine",
+          "name": "engine",
+          "type": "DRAMA3_T8_ENGINE",
+          "link": 7
+        },
+        {
+          "label": "session",
+          "name": "session",
+          "type": "DRAMA3_T8_SESSION",
+          "link": 8
+        },
+        {
+          "label": "take_index",
+          "name": "take_index",
+          "type": "INT",
+          "widget": {
+            "name": "take_index"
+          },
+          "link": null
+        },
+        {
+          "label": "all_takes",
+          "name": "all_takes",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "all_takes"
+          },
+          "link": null
+        },
+        {
+          "label": "shorten_long_pauses",
+          "name": "shorten_long_pauses",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "shorten_long_pauses"
+          },
+          "link": null
+        },
+        {
+          "label": "max_pause_seconds",
+          "name": "max_pause_seconds",
+          "shape": 7,
+          "type": "FLOAT",
+          "widget": {
+            "name": "max_pause_seconds"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "label": "AUDIO",
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            17
+          ]
+        },
+        {
+          "label": "STRING",
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            10
+          ]
+        }
+      ],
+      "widgets_values": [
+        -1,
+        false,
+        true,
+        0.4
+      ],
+      "title": "输出音频 Decode"
+    },
+    {
+      "id": 9,
+      "type": "PreviewAny",
+      "pos": [
+        1980,
+        360
+      ],
+      "size": [
+        400,
+        220
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "source",
+          "name": "source",
+          "type": "*",
+          "link": 10
+        }
+      ],
+      "outputs": [
+        {
+          "label": "STRING",
+          "name": "STRING",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "title": "生成台词 / Generated transcript",
+      "widgets_values": []
+    },
+    {
+      "id": 10,
+      "type": "Note",
+      "pos": [
+        -620,
+        -280
+      ],
+      "size": [
+        460,
+        260
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Workflow note",
+      "widgets_values": [
+        "Portable talking-head workflow reference."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 11,
+      "type": "Note",
+      "pos": [
+        1140,
+        -280
+      ],
+      "size": [
+        430,
+        220
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Workflow note",
+      "widgets_values": [
+        "Portable talking-head workflow reference."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 12,
+      "type": "CR Prompt Text",
+      "pos": [
+        -620,
+        20
+      ],
+      "size": [
+        440,
+        240
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "prompt",
+          "name": "prompt",
+          "type": "STRING",
+          "widget": {
+            "name": "prompt"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "label": "prompt",
+          "name": "prompt",
+          "type": "STRING",
+          "links": [
+            11
+          ]
+        },
+        {
+          "label": "show_help",
+          "name": "show_help",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "widgets_values": [
+        "Example text. Replace before production."
+      ],
+      "title": "Speech text"
+    },
+    {
+      "id": 13,
+      "type": "CR Prompt Text",
+      "pos": [
+        -620,
+        300
+      ],
+      "size": [
+        440,
+        220
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "prompt",
+          "name": "prompt",
+          "type": "STRING",
+          "widget": {
+            "name": "prompt"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "label": "prompt",
+          "name": "prompt",
+          "type": "STRING",
+          "links": [
+            12
+          ]
+        },
+        {
+          "label": "show_help",
+          "name": "show_help",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "widgets_values": [
+        "Example text. Replace before production."
+      ],
+      "title": "Voice direction"
+    },
+    {
+      "id": 14,
+      "type": "R2T2Transcribe",
+      "pos": [
+        -160,
+        560
+      ],
+      "size": [
+        400,
+        370
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "model",
+          "name": "model",
+          "type": "R2T2_MODEL",
+          "link": 13
+        },
+        {
+          "label": "audio",
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 14
+        },
+        {
+          "label": "mode",
+          "name": "mode",
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null
+        },
+        {
+          "label": "language",
+          "name": "language",
+          "type": "COMBO",
+          "widget": {
+            "name": "language"
+          },
+          "link": null
+        },
+        {
+          "label": "context",
+          "name": "context",
+          "type": "STRING",
+          "widget": {
+            "name": "context"
+          },
+          "link": null
+        },
+        {
+          "label": "hotwords",
+          "name": "hotwords",
+          "type": "STRING",
+          "widget": {
+            "name": "hotwords"
+          },
+          "link": null
+        },
+        {
+          "label": "channel",
+          "name": "channel",
+          "type": "COMBO",
+          "widget": {
+            "name": "channel"
+          },
+          "link": null
+        },
+        {
+          "label": "auto_gain",
+          "name": "auto_gain",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "auto_gain"
+          },
+          "link": null
+        },
+        {
+          "label": "stream_chunk_ms",
+          "name": "stream_chunk_ms",
+          "shape": 7,
+          "type": "INT",
+          "widget": {
+            "name": "stream_chunk_ms"
+          },
+          "link": null
+        },
+        {
+          "label": "subtitle_timings",
+          "name": "subtitle_timings",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "subtitle_timings"
+          },
+          "link": null
+        },
+        {
+          "label": "unload_after",
+          "name": "unload_after",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "unload_after"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "label": "text",
+          "name": "text",
+          "type": "STRING",
+          "links": [
+            16
+          ]
+        },
+        {
+          "label": "language",
+          "name": "language",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "label": "result_json",
+          "name": "result_json",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "label": "srt",
+          "name": "srt",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "widgets_values": [
+        "offline",
+        "Chinese",
+        "",
+        "",
+        "mean",
+        true,
+        160,
+        false,
+        false
+      ],
+      "title": "参考转写 ASR（R2T2）"
+    },
+    {
+      "id": 15,
+      "type": "R2T2GGUFLoader",
+      "pos": [
+        -620,
+        870
+      ],
+      "size": [
+        270,
+        150
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "n_ctx",
+          "name": "n_ctx",
+          "type": "INT",
+          "widget": {
+            "name": "n_ctx"
+          },
+          "link": null
+        },
+        {
+          "label": "n_batch",
+          "name": "n_batch",
+          "type": "INT",
+          "widget": {
+            "name": "n_batch"
+          },
+          "link": null
+        },
+        {
+          "label": "n_threads",
+          "name": "n_threads",
+          "type": "INT",
+          "widget": {
+            "name": "n_threads"
+          },
+          "link": null
+        },
+        {
+          "label": "gpu_layers",
+          "name": "gpu_layers",
+          "type": "INT",
+          "widget": {
+            "name": "gpu_layers"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "label": "model",
+          "name": "model",
+          "type": "R2T2_MODEL",
+          "links": [
+            13
+          ]
+        },
+        {
+          "label": "status",
+          "name": "status",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "widgets_values": [
+        8192,
+        1024,
+        8,
+        -1
+      ],
+      "title": "ASR 模型加载（R2T2）"
+    },
+    {
+      "id": 17,
+      "type": "SaveAudioAdvanced",
+      "pos": [
+        1980,
+        60
+      ],
+      "size": [
+        280,
+        240
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "audio",
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 17
+        },
+        {
+          "label": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        },
+        {
+          "label": "format",
+          "name": "format",
+          "type": "COMFY_DYNAMICCOMBO_V3",
+          "widget": {
+            "name": "format"
+          },
+          "link": null
+        },
+        {
+          "label": "audioUI",
+          "name": "audioUI",
+          "type": "AUDIO_UI",
+          "widget": {
+            "name": "audioUI"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "label": "audio",
+          "name": "audio",
+          "type": "AUDIO",
+          "links": []
+        }
+      ],
+      "widgets_values": [
+        "audio/talking-head",
+        "flac"
+      ],
+      "title": "保存成品音频 FLAC"
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      3,
+      0,
+      "DRAMA3_T8_ENGINE"
+    ],
+    [
+      2,
+      2,
+      0,
+      3,
+      1,
+      "AUDIO"
+    ],
+    [
+      3,
+      3,
+      0,
+      4,
+      0,
+      "DRAMA3_T8_REFERENCES"
+    ],
+    [
+      4,
+      4,
+      0,
+      6,
+      0,
+      "DRAMA3_T8_SESSION"
+    ],
+    [
+      5,
+      1,
+      0,
+      5,
+      0,
+      "DRAMA3_T8_ENGINE"
+    ],
+    [
+      6,
+      4,
+      0,
+      5,
+      1,
+      "DRAMA3_T8_SESSION"
+    ],
+    [
+      7,
+      1,
+      0,
+      7,
+      0,
+      "DRAMA3_T8_ENGINE"
+    ],
+    [
+      8,
+      5,
+      0,
+      7,
+      1,
+      "DRAMA3_T8_SESSION"
+    ],
+    [
+      10,
+      7,
+      1,
+      9,
+      0,
+      "STRING"
+    ],
+    [
+      11,
+      12,
+      0,
+      5,
+      3,
+      "STRING"
+    ],
+    [
+      12,
+      13,
+      0,
+      4,
+      1,
+      "STRING"
+    ],
+    [
+      13,
+      15,
+      0,
+      14,
+      0,
+      "R2T2_MODEL"
+    ],
+    [
+      14,
+      2,
+      0,
+      14,
+      1,
+      "AUDIO"
+    ],
+    [
+      16,
+      14,
+      0,
+      3,
+      3,
+      "STRING"
+    ],
+    [
+      17,
+      7,
+      0,
+      17,
+      0,
+      "AUDIO"
+    ]
+  ],
+  "version": 0.4
+}

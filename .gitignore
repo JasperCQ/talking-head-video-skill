@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.venv/
+.DS_Store
+.env
+.env.*
+!.env.example
+config.json
+.runtime/
+runs/
+.scratch/
+artifacts/
+*.log

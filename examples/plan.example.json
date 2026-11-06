@@ -1,0 +1,13 @@
+{
+  "title": "随行杯商品讲解",
+  "script": "这只随行杯的杯盖可以拆开清洗。带出门之前，请先确认杯盖已经拧紧。",
+  "segments": ["这只随行杯的杯盖可以拆开清洗。", "带出门之前，请先确认杯盖已经拧紧。"],
+  "visual_brief": "固定中景，人物手持产品，杯盖结构用真实产品照片核对；避免编造保温或防漏效果。",
+  "facts": [{"claim": "杯盖可以拆开清洗", "source": "用户提供的产品说明；示例，真实使用时需替换"}],
+  "assets": {
+    "presenter": "media/presenter.png",
+    "scene": "media/scene.png",
+    "product": "media/product.png",
+    "voice": "media/reference-voice.wav"
+  }
+}

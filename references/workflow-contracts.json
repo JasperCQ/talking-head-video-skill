@@ -1,0 +1,781 @@
+{
+  "tts": {
+    "nodes": {
+      "1": {
+        "class_type": "T8DramaLoader",
+        "fields": []
+      },
+      "2": {
+        "class_type": "LoadAudio",
+        "fields": [
+          "audio"
+        ]
+      },
+      "3": {
+        "class_type": "T8DramaReference",
+        "fields": [
+          "audio",
+          "engine",
+          "transcript"
+        ]
+      },
+      "4": {
+        "class_type": "T8DramaSession",
+        "fields": [
+          "direction",
+          "references"
+        ]
+      },
+      "5": {
+        "class_type": "T8DramaGenerate",
+        "fields": [
+          "engine",
+          "session",
+          "text"
+        ]
+      },
+      "7": {
+        "class_type": "T8DramaDecode",
+        "fields": [
+          "engine",
+          "session"
+        ]
+      },
+      "12": {
+        "class_type": "CR Prompt Text",
+        "fields": [
+          "prompt"
+        ]
+      },
+      "13": {
+        "class_type": "CR Prompt Text",
+        "fields": [
+          "prompt"
+        ]
+      },
+      "14": {
+        "class_type": "R2T2Transcribe",
+        "fields": [
+          "audio",
+          "model"
+        ]
+      },
+      "15": {
+        "class_type": "R2T2GGUFLoader",
+        "fields": []
+      },
+      "17": {
+        "class_type": "SaveAudioAdvanced",
+        "fields": [
+          "audio"
+        ]
+      }
+    },
+    "links": [
+      {
+        "target": "3",
+        "field": "engine",
+        "source": "1",
+        "slot": 0
+      },
+      {
+        "target": "3",
+        "field": "audio",
+        "source": "2",
+        "slot": 0
+      },
+      {
+        "target": "4",
+        "field": "references",
+        "source": "3",
+        "slot": 0
+      },
+      {
+        "target": "5",
+        "field": "engine",
+        "source": "1",
+        "slot": 0
+      },
+      {
+        "target": "5",
+        "field": "session",
+        "source": "4",
+        "slot": 0
+      },
+      {
+        "target": "7",
+        "field": "engine",
+        "source": "1",
+        "slot": 0
+      },
+      {
+        "target": "7",
+        "field": "session",
+        "source": "5",
+        "slot": 0
+      },
+      {
+        "target": "5",
+        "field": "text",
+        "source": "12",
+        "slot": 0
+      },
+      {
+        "target": "4",
+        "field": "direction",
+        "source": "13",
+        "slot": 0
+      },
+      {
+        "target": "14",
+        "field": "model",
+        "source": "15",
+        "slot": 0
+      },
+      {
+        "target": "14",
+        "field": "audio",
+        "source": "2",
+        "slot": 0
+      },
+      {
+        "target": "3",
+        "field": "transcript",
+        "source": "14",
+        "slot": 0
+      },
+      {
+        "target": "17",
+        "field": "audio",
+        "source": "7",
+        "slot": 0
+      }
+    ]
+  },
+  "fl-base": {
+    "nodes": {
+      "61": {
+        "class_type": "CLIPLoader",
+        "fields": []
+      },
+      "62": {
+        "class_type": "RandomNoise",
+        "fields": []
+      },
+      "63": {
+        "class_type": "BasicGuider",
+        "fields": [
+          "conditioning",
+          "model"
+        ]
+      },
+      "64": {
+        "class_type": "SamplerCustomAdvanced",
+        "fields": [
+          "guider",
+          "latent_image",
+          "noise",
+          "sampler",
+          "sigmas"
+        ]
+      },
+      "65": {
+        "class_type": "MiniMaxH3DualClockSamplerT8",
+        "fields": [
+          "av_latent",
+          "model"
+        ]
+      },
+      "67": {
+        "class_type": "VAELoader",
+        "fields": []
+      },
+      "68": {
+        "class_type": "MiniMaxH3MemoryEfficientSageAttentionPatch",
+        "fields": [
+          "model"
+        ]
+      },
+      "69": {
+        "class_type": "VAELoader",
+        "fields": []
+      },
+      "70": {
+        "class_type": "UNETLoader",
+        "fields": []
+      },
+      "71": {
+        "class_type": "LoraLoaderBypassModelOnly",
+        "fields": [
+          "model"
+        ]
+      },
+      "72": {
+        "class_type": "LoadImage",
+        "fields": [
+          "image"
+        ]
+      },
+      "73": {
+        "class_type": "PrimitiveFloat",
+        "fields": [
+          "value"
+        ]
+      },
+      "74": {
+        "class_type": "LoadAudio",
+        "fields": [
+          "audio"
+        ]
+      },
+      "75": {
+        "class_type": "ComfyMathExpression",
+        "fields": [
+          "values.a"
+        ]
+      },
+      "76": {
+        "class_type": "MiniMaxH3AudioConditioningT8",
+        "fields": [
+          "audio_vae",
+          "clip",
+          "drive_audio",
+          "height",
+          "length",
+          "prompt",
+          "ref_images.ref_image_0",
+          "ref_images.ref_image_1",
+          "ref_images.ref_image_2",
+          "task_type",
+          "video_vae",
+          "width",
+          "audio_mode",
+          "audio_denoise_strength"
+        ]
+      },
+      "77": {
+        "class_type": "ModelAttentionBackend",
+        "fields": [
+          "model"
+        ]
+      },
+      "78": {
+        "class_type": "ResolutionSelector",
+        "fields": [
+          "aspect_ratio",
+          "megapixels",
+          "multiple"
+        ]
+      },
+      "79": {
+        "class_type": "CR Prompt Text",
+        "fields": [
+          "prompt"
+        ]
+      },
+      "80": {
+        "class_type": "MiniMaxH3AVDecodeT8",
+        "fields": [
+          "audio_vae",
+          "av_latent",
+          "video_vae"
+        ]
+      },
+      "81": {
+        "class_type": "VHS_VideoCombine",
+        "fields": [
+          "audio",
+          "images"
+        ]
+      },
+      "84": {
+        "class_type": "LoadImage",
+        "fields": [
+          "image"
+        ]
+      },
+      "85": {
+        "class_type": "LoadImage",
+        "fields": [
+          "image"
+        ]
+      }
+    },
+    "links": [
+      {
+        "target": "63",
+        "field": "model",
+        "source": "65",
+        "slot": 0
+      },
+      {
+        "target": "63",
+        "field": "conditioning",
+        "source": "76",
+        "slot": 0
+      },
+      {
+        "target": "64",
+        "field": "noise",
+        "source": "62",
+        "slot": 0
+      },
+      {
+        "target": "64",
+        "field": "guider",
+        "source": "63",
+        "slot": 0
+      },
+      {
+        "target": "64",
+        "field": "sampler",
+        "source": "65",
+        "slot": 1
+      },
+      {
+        "target": "64",
+        "field": "sigmas",
+        "source": "65",
+        "slot": 2
+      },
+      {
+        "target": "64",
+        "field": "latent_image",
+        "source": "76",
+        "slot": 1
+      },
+      {
+        "target": "65",
+        "field": "model",
+        "source": "71",
+        "slot": 0
+      },
+      {
+        "target": "65",
+        "field": "av_latent",
+        "source": "76",
+        "slot": 1
+      },
+      {
+        "target": "68",
+        "field": "model",
+        "source": "70",
+        "slot": 0
+      },
+      {
+        "target": "71",
+        "field": "model",
+        "source": "77",
+        "slot": 0
+      },
+      {
+        "target": "75",
+        "field": "values.a",
+        "source": "73",
+        "slot": 0
+      },
+      {
+        "target": "76",
+        "field": "clip",
+        "source": "61",
+        "slot": 0
+      },
+      {
+        "target": "76",
+        "field": "video_vae",
+        "source": "69",
+        "slot": 0
+      },
+      {
+        "target": "76",
+        "field": "audio_vae",
+        "source": "67",
+        "slot": 0
+      },
+      {
+        "target": "76",
+        "field": "drive_audio",
+        "source": "74",
+        "slot": 0
+      },
+      {
+        "target": "76",
+        "field": "ref_images.ref_image_0",
+        "source": "72",
+        "slot": 0
+      },
+      {
+        "target": "77",
+        "field": "model",
+        "source": "68",
+        "slot": 0
+      },
+      {
+        "target": "80",
+        "field": "av_latent",
+        "source": "64",
+        "slot": 0
+      },
+      {
+        "target": "80",
+        "field": "video_vae",
+        "source": "69",
+        "slot": 0
+      },
+      {
+        "target": "80",
+        "field": "audio_vae",
+        "source": "67",
+        "slot": 0
+      },
+      {
+        "target": "81",
+        "field": "images",
+        "source": "80",
+        "slot": 0
+      },
+      {
+        "target": "76",
+        "field": "prompt",
+        "source": "79",
+        "slot": 0
+      },
+      {
+        "target": "76",
+        "field": "width",
+        "source": "78",
+        "slot": 0
+      },
+      {
+        "target": "76",
+        "field": "height",
+        "source": "78",
+        "slot": 1
+      },
+      {
+        "target": "76",
+        "field": "length",
+        "source": "75",
+        "slot": 1
+      },
+      {
+        "target": "81",
+        "field": "audio",
+        "source": "76",
+        "slot": 2
+      },
+      {
+        "target": "76",
+        "field": "ref_images.ref_image_1",
+        "source": "84",
+        "slot": 0
+      },
+      {
+        "target": "76",
+        "field": "ref_images.ref_image_2",
+        "source": "85",
+        "slot": 0
+      }
+    ]
+  },
+  "fl-i2v": {
+    "nodes": {
+      "61": {
+        "class_type": "CLIPLoader",
+        "fields": []
+      },
+      "62": {
+        "class_type": "RandomNoise",
+        "fields": []
+      },
+      "63": {
+        "class_type": "BasicGuider",
+        "fields": [
+          "conditioning",
+          "model"
+        ]
+      },
+      "64": {
+        "class_type": "SamplerCustomAdvanced",
+        "fields": [
+          "guider",
+          "latent_image",
+          "noise",
+          "sampler",
+          "sigmas"
+        ]
+      },
+      "65": {
+        "class_type": "MiniMaxH3DualClockSamplerT8",
+        "fields": [
+          "av_latent",
+          "model"
+        ]
+      },
+      "67": {
+        "class_type": "VAELoader",
+        "fields": []
+      },
+      "68": {
+        "class_type": "MiniMaxH3MemoryEfficientSageAttentionPatch",
+        "fields": [
+          "model"
+        ]
+      },
+      "69": {
+        "class_type": "VAELoader",
+        "fields": []
+      },
+      "70": {
+        "class_type": "UNETLoader",
+        "fields": []
+      },
+      "71": {
+        "class_type": "LoraLoaderBypassModelOnly",
+        "fields": [
+          "model"
+        ]
+      },
+      "73": {
+        "class_type": "PrimitiveFloat",
+        "fields": [
+          "value"
+        ]
+      },
+      "74": {
+        "class_type": "LoadAudio",
+        "fields": [
+          "audio"
+        ]
+      },
+      "75": {
+        "class_type": "ComfyMathExpression",
+        "fields": [
+          "values.a"
+        ]
+      },
+      "76": {
+        "class_type": "MiniMaxH3AudioConditioningT8",
+        "fields": [
+          "audio_vae",
+          "clip",
+          "drive_audio",
+          "first_frame",
+          "height",
+          "length",
+          "prompt",
+          "task_type",
+          "video_vae",
+          "width",
+          "audio_mode",
+          "audio_denoise_strength"
+        ]
+      },
+      "77": {
+        "class_type": "ModelAttentionBackend",
+        "fields": [
+          "model"
+        ]
+      },
+      "78": {
+        "class_type": "ResolutionSelector",
+        "fields": [
+          "aspect_ratio",
+          "megapixels",
+          "multiple"
+        ]
+      },
+      "79": {
+        "class_type": "CR Prompt Text",
+        "fields": [
+          "prompt"
+        ]
+      },
+      "80": {
+        "class_type": "MiniMaxH3AVDecodeT8",
+        "fields": [
+          "audio_vae",
+          "av_latent",
+          "video_vae"
+        ]
+      },
+      "81": {
+        "class_type": "VHS_VideoCombine",
+        "fields": [
+          "audio",
+          "images"
+        ]
+      },
+      "86": {
+        "class_type": "LoadImage",
+        "fields": [
+          "image"
+        ]
+      }
+    },
+    "links": [
+      {
+        "target": "63",
+        "field": "model",
+        "source": "65",
+        "slot": 0
+      },
+      {
+        "target": "63",
+        "field": "conditioning",
+        "source": "76",
+        "slot": 0
+      },
+      {
+        "target": "64",
+        "field": "noise",
+        "source": "62",
+        "slot": 0
+      },
+      {
+        "target": "64",
+        "field": "guider",
+        "source": "63",
+        "slot": 0
+      },
+      {
+        "target": "64",
+        "field": "sampler",
+        "source": "65",
+        "slot": 1
+      },
+      {
+        "target": "64",
+        "field": "sigmas",
+        "source": "65",
+        "slot": 2
+      },
+      {
+        "target": "64",
+        "field": "latent_image",
+        "source": "76",
+        "slot": 1
+      },
+      {
+        "target": "65",
+        "field": "model",
+        "source": "71",
+        "slot": 0
+      },
+      {
+        "target": "65",
+        "field": "av_latent",
+        "source": "76",
+        "slot": 1
+      },
+      {
+        "target": "68",
+        "field": "model",
+        "source": "70",
+        "slot": 0
+      },
+      {
+        "target": "71",
+        "field": "model",
+        "source": "77",
+        "slot": 0
+      },
+      {
+        "target": "75",
+        "field": "values.a",
+        "source": "73",
+        "slot": 0
+      },
+      {
+        "target": "76",
+        "field": "clip",
+        "source": "61",
+        "slot": 0
+      },
+      {
+        "target": "76",
+        "field": "video_vae",
+        "source": "69",
+        "slot": 0
+      },
+      {
+        "target": "76",
+        "field": "audio_vae",
+        "source": "67",
+        "slot": 0
+      },
+      {
+        "target": "76",
+        "field": "drive_audio",
+        "source": "74",
+        "slot": 0
+      },
+      {
+        "target": "77",
+        "field": "model",
+        "source": "68",
+        "slot": 0
+      },
+      {
+        "target": "80",
+        "field": "av_latent",
+        "source": "64",
+        "slot": 0
+      },
+      {
+        "target": "80",
+        "field": "video_vae",
+        "source": "69",
+        "slot": 0
+      },
+      {
+        "target": "80",
+        "field": "audio_vae",
+        "source": "67",
+        "slot": 0
+      },
+      {
+        "target": "81",
+        "field": "images",
+        "source": "80",
+        "slot": 0
+      },
+      {
+        "target": "76",
+        "field": "prompt",
+        "source": "79",
+        "slot": 0
+      },
+      {
+        "target": "76",
+        "field": "width",
+        "source": "78",
+        "slot": 0
+      },
+      {
+        "target": "76",
+        "field": "height",
+        "source": "78",
+        "slot": 1
+      },
+      {
+        "target": "76",
+        "field": "length",
+        "source": "75",
+        "slot": 1
+      },
+      {
+        "target": "81",
+        "field": "audio",
+        "source": "76",
+        "slot": 2
+      },
+      {
+        "target": "76",
+        "field": "first_frame",
+        "source": "86",
+        "slot": 0
+      }
+    ]
+  }
+}

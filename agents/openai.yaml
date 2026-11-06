@@ -1,0 +1,4 @@
+interface:
+  display_name: "数字人口播视频"
+  short_description: "从商品素材、口播和参考音色生成可审核的数字人口播视频"
+  default_prompt: "使用 $talking-head-video，根据我的素材和口播制作数字人视频。"
