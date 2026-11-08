@@ -6,7 +6,7 @@ from pathlib import Path
 
 from . import media
 from .config import MODES, UserError, workflow_id
-from .provider import RunningHub, node_info, validate_prompt
+from .provider import RunningHub, RunningHubError, node_info, validate_prompt
 from .store import digest, fingerprint, now
 
 
@@ -241,7 +241,16 @@ class Service:
                       "inspection": inspection, "workflow_id": operation["workflow_id"]}
             task["operations"][operation["key"]] = record
             self.store.save(task)  # Durable intent BEFORE create; an ambiguous create must never be repeated.
-            platform_id = self.provider.submit(operation, node_info(operation, uploaded))
+            try:
+                platform_id = self.provider.submit(operation, node_info(operation, uploaded))
+            except RunningHubError as exc:
+                record.update(error_code=exc.code, submission_outcome="unknown")
+                # Official 416 explicitly means task creation failed for insufficient funds.
+                # Unknown codes (including 605) may not safely be treated as a rejection.
+                if exc.code == 416:
+                    record.update(status="failed", submission_outcome="rejected", finished_at=now())
+                self.store.save(task)
+                raise
             record.update(status="submitted", platform_task_id=platform_id, submitted_at=now())
             self.store.save(task)  # Preserve platform ID before polling or downloading anything.
             return {"task_id": task_id, "operation_key": operation["key"], **record}
@@ -252,10 +261,10 @@ class Service:
             record = task["operations"].get(key)
             if not record:
                 raise UserError("未找到该操作。")
-            if not record.get("platform_task_id"):
-                raise UserError("提交结果未知。请在平台核对后用 recover 绑定已有任务 ID；不会自动重提。")
             if record["status"] in ("succeeded", "failed"):
                 return self.view(task)
+            if not record.get("platform_task_id"):
+                raise UserError("提交结果未知。请在平台核对后用 recover 绑定已有任务 ID；不会自动重提。")
             result = self.provider.poll(record["platform_task_id"])
             if result["status"] == "failed":
                 record.update(status="failed", finished_at=now())

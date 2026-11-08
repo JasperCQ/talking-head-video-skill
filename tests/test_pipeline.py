@@ -16,7 +16,7 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from thvideo import media
 from thvideo.config import UserError, load_config
-from thvideo.provider import CONTRACTS, RunningHub, node_info, validate_graph, validate_prompt
+from thvideo.provider import CONTRACTS, RunningHub, RunningHubError, node_info, validate_graph, validate_prompt
 from thvideo.service import Service
 from thvideo.store import Store, fingerprint
 
@@ -188,6 +188,47 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(self.service.poll(self.task_id, op["operation_key"])["status"], "audio_review")
         self.assertEqual(len(self.hub.created), 1)
 
+    def test_wallet_rejection_can_be_explicitly_retried_without_resubmitting(self):
+        self.create(); self.approve("content")
+        with patch.object(self.hub, "submit", side_effect=RunningHubError(416)) as submit:
+            with self.assertRaises(RunningHubError):
+                self.submit()
+            task = self.service.store.load(self.task_id)
+            record = task["operations"]["tts-attempt-1"]
+            self.assertEqual(record["status"], "failed")
+            self.assertEqual(record["submission_outcome"], "rejected")
+            self.assertEqual(record["error_code"], 416)
+            self.assertNotIn("platform_task_id", record)
+            with patch.object(self.hub, "poll") as poll:
+                self.assertEqual(self.service.poll(self.task_id, "tts-attempt-1")["status"], "execution_failed")
+                poll.assert_not_called()
+            with self.assertRaises(UserError):
+                self.submit()
+            resumed = Service(Store(self.root), self.config, self.hub)
+            resumed.retry(self.task_id, None, "已处理余额，准备新的付费预览")
+            preview = resumed.preview(self.task_id)
+            self.assertEqual(preview["operation"]["key"], "tts-attempt-2")
+            with self.assertRaises(UserError):
+                resumed.submit(self.task_id, preview["digest"])
+            submit.assert_called_once()
+
+    def test_undocumented_create_error_is_saved_and_still_requires_reconciliation(self):
+        self.ready_segments(); self.ready_prompt()
+        with patch.object(self.hub, "submit", side_effect=RunningHubError(605)) as submit:
+            with self.assertRaises(RunningHubError):
+                self.submit(0, calibration=True)
+            resumed = Service(Store(self.root), self.config, self.hub)
+            task = resumed.store.load(self.task_id)
+            record = task["operations"]["video-0-attempt-1"]
+            self.assertEqual(record["error_code"], 605)
+            self.assertEqual(record["submission_outcome"], "unknown")
+            self.assertEqual(resumed.view(task)["status"], "needs_reconciliation")
+            with self.assertRaises(UserError):
+                resumed.retry(self.task_id, 0, "尚未查明错误")
+            with self.assertRaises(UserError):
+                self.submit(0, calibration=True)
+            submit.assert_called_once()
+
     def test_paid_flag_and_stale_digest_prevent_network_submission(self):
         self.create(); self.approve("content")
         preview = self.service.preview(self.task_id)
@@ -252,6 +293,14 @@ class PipelineTests(unittest.TestCase):
 
 
 class ContractTests(unittest.TestCase):
+    def test_error_preserves_numeric_code_without_echoing_server_secrets(self):
+        hub = RunningHub({})
+        for code in (416, 605, "DO_NOT_ECHO_SECRET", {"secret": "DO_NOT_ECHO_SECRET"}):
+            with self.subTest(code=code), self.assertRaises(RunningHubError) as caught:
+                hub._success({"code": code, "msg": "DO_NOT_ECHO_SECRET"})
+            self.assertEqual(caught.exception.code, code if type(code) is int else None)
+            self.assertNotIn("DO_NOT_ECHO_SECRET", str(caught.exception))
+
     def test_cli_json_is_utf8_even_with_ascii_process_default(self):
         script = Path(__file__).resolve().parents[1] / "scripts/talking_head.py"
         with tempfile.TemporaryDirectory() as temp:

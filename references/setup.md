@@ -28,6 +28,8 @@ python3 scripts/talking_head.py inspect --mode fl-i2v
 
 上述命令从 Skill 根目录运行；使用已有配音时省略 `inspect --mode tts`。`doctor` 中 TTS 未配置不妨碍已有配音的视频路线。MiniMax Speech 等其他工具产出的配音也作为 `assets.audio` 导入；当前内置 TTS 提交器只支持 Drama3。
 
+选择密钥时区分会员积分与钱包余额。2026-11-08 核对[官方接入说明](https://www.runninghub.cn/runninghub-api-doc-cn/)及控制台“API KEY调用权益对比”：工作流 API 支持消费级-会员、企业级-共享和企业级-独占 Key；消费级-会员的运行时长费扣积分，企业级-共享扣钱包。若工作流内部另有模型 API 或 LLM API 节点，其调用费仍可能扣钱包。会员积分不能直接当作共享 API 钱包余额。标准模型接口（包括另外生成 MiniMax Speech 配音）只支持企业级-共享 Key。具体套餐、机型权限与费率以自己账号的当前权益为准；更换 Key 后先只读 `inspect`，不能仅凭页面余额认定工作流可运行。
+
 环境变量在父进程继承；另一个终端设置的变量不会自动出现在已经运行的 Agent 中。Agent 运行真实请求时也须在带该变量的进程环境中。`doctor` 只返回是否存在密钥。
 
 `--config PATH` 或 `TALKING_HEAD_CONFIG` 可指定配置路径；`TALKING_HEAD_WORKFLOW_TTS`、`TALKING_HEAD_WORKFLOW_FL_BASE`、`TALKING_HEAD_WORKFLOW_FL_I2V` 覆盖对应 ID。命令参数放在子命令前，例如 `python3 scripts/talking_head.py --config /path/config.json doctor`。

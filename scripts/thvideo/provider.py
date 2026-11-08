@@ -17,6 +17,14 @@ BASE_URL = "https://www.runninghub.cn"
 AUDIO_SUFFIXES = {".flac", ".wav", ".mp3", ".m4a", ".ogg"}
 
 
+class RunningHubError(UserError):
+    def __init__(self, code):
+        # Never echo arbitrary response fields, including a malformed code value.
+        self.code = code if type(code) is int else None
+        label = self.code if self.code is not None else "unknown"
+        super().__init__(f"RunningHub 返回错误码 {label}；请在平台核查。")
+
+
 def find_graph(value):
     if isinstance(value, str):
         try:
@@ -121,8 +129,7 @@ class RunningHub:
 
     def _success(self, data):
         if data.get("code") != 0:
-            # Do not echo arbitrary server text, which might contain credentials.
-            raise UserError(f"RunningHub 返回错误码 {data.get('code', 'missing')}；请在平台核查。")
+            raise RunningHubError(data.get("code"))
         return data
 
     def inspect(self, mode):
