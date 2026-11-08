@@ -4,7 +4,7 @@
 
 ## 三个工作流
 
-将 `workflows/drama3-tts.json`、`workflows/h3-base.json`、`workflows/h3-continuation.json` 导入自己的 RunningHub 工作区，确认所需自定义节点与模型在所用环境可用，再保存为自己有调用权限的工作流。导出来自已有交接包，已替换样本文案和输入文件名，不包含模型权重和自定义节点实现。
+将本目录下 `workflows/h3-base.json`、`workflows/h3-continuation.json` 导入自己的 RunningHub 工作区；需要从参考声音生成配音时，再导入 `workflows/drama3-tts.json`。已有完整配音可通过任务的 `assets.audio` 导入，不需要 TTS 工作流。确认所需自定义节点与模型在所用环境可用，再保存为自己有调用权限的工作流。导出来自已有交接包，已替换样本文案和输入文件名，不包含模型权重和自定义节点实现。
 
 这些是 ComfyUI UI 格式导出；不是 API 图，也不是已部署服务。导入后缺模型、缺节点、版本不同或 API 图变化都可能导致无法运行。不要改节点 ID 来“修好”检查；应查明差异后同步适配器和契约，并重新验证。
 
@@ -14,7 +14,7 @@
 | fl-base | 人物、场景、产品参考生视频 | 72/84/85.image，74.audio，73.value 秒数，79.prompt，78 竖屏尺寸 |
 | fl-i2v | 上一段尾帧续接 | 86.image 尾帧，74.audio，73.value 秒数，79.prompt，78 竖屏尺寸 |
 
-复制 `config.example.json` 到 `~/.config/talking-head-video/config.json`，填三个**自己的**纯数字工作流 ID。`portrait_evidence` 初始为空，由实际校准样片登记，不手工填写。
+复制 Skill 根目录的 `config.example.json` 到 `~/.config/talking-head-video/config.json`，填所需模式的**自己的**纯数字工作流 ID；使用已有配音时可留空 `tts`。`portrait_evidence` 初始为空，由实际校准样片登记，不手工填写。
 
 密钥通过启动进程的 `RUNNINGHUB_API_KEY` 提供。请在自己的终端或可信的密钥管理器配置，不要发送到聊天或写入仓库。Shell 示例（值自行填写）：
 
@@ -25,6 +25,8 @@ python3 scripts/talking_head.py inspect --mode tts
 python3 scripts/talking_head.py inspect --mode fl-base
 python3 scripts/talking_head.py inspect --mode fl-i2v
 ```
+
+上述命令从 Skill 根目录运行；使用已有配音时省略 `inspect --mode tts`。`doctor` 中 TTS 未配置不妨碍已有配音的视频路线。MiniMax Speech 等其他工具产出的配音也作为 `assets.audio` 导入；当前内置 TTS 提交器只支持 Drama3。
 
 环境变量在父进程继承；另一个终端设置的变量不会自动出现在已经运行的 Agent 中。Agent 运行真实请求时也须在带该变量的进程环境中。`doctor` 只返回是否存在密钥。
 
