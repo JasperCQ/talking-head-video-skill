@@ -8,6 +8,21 @@
 
 这些是 ComfyUI UI 格式导出；不是 API 图，也不是已部署服务。导入后缺模型、缺节点、版本不同或 API 图变化都可能导致无法运行。不要改节点 ID 来“修好”检查；应查明差异后同步适配器和契约，并重新验证。
 
+### 导入后检查哪些依赖
+
+以下名称直接取自仓库内的工作流快照，供在 RunningHub 中逐项核对；不是已验证的下载或部署方案。模型和节点在云端工作流运行环境中准备，本机 Python / FFmpeg 不负责加载它们。
+
+| 工作流 | 快照中选择的模型文件 |
+| --- | --- |
+| H3 基础流、续接流 | `minimax_h3_fl2va_int8_convrot.safetensors`、`qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors`、`minimax_h3_audio_vae_fp32.safetensors`、`minimax_h3_video_vae_int8_convrot.safetensors`、`minimax_h3_turbo_4步加速_comfyui.safetensors` |
+| Drama3 TTS | `drama3-fp8.safetensors`、`drama3-codec.safetensors` |
+
+H3 两条流还使用 `MiniMaxH3AudioConditioningT8`、`MiniMaxH3DualClockSamplerT8`、`MiniMaxH3MemoryEfficientSageAttentionPatch`、`MiniMaxH3AVDecodeT8`、`LoraLoaderBypassModelOnly`、`ModelAttentionBackend`、`ComfyMathExpression`、`ResolutionSelector`、`CR Prompt Text` 和 `VHS_VideoCombine` 等节点。Drama3 使用 `T8DramaLoader`、`T8DramaReference`、`T8DramaSession`、`T8DramaGenerate`、`T8DramaDecode`、`T8DramaSaveSession`、`SaveAudioAdvanced` 和 `CR Prompt Text` 等节点。
+
+Drama3 的参考声音还经过 `R2T2GGUFLoader` → `R2T2Transcribe` 转写，再送入 `T8DramaReference`，因此只有 Drama3 的两个模型文件仍不够。当前导出没有给出 R2T2 模型的具体文件名，也没有保留自定义节点的来源、版本和安装地址；需在目标环境核实，不能根据节点名猜测安装包。已有完整配音路线可跳过整个 Drama3 工作流。
+
+在自己的云端工作流中确认这些加载器能选中所需文件、没有缺失节点，保存后执行下面的 `inspect`。`inspect` 核验 API 图的节点和连线，不检查云端模型文件是否实际存在、显存是否足够或推理是否成功；这些仍需经过明确批准的校准生成验证。
+
 | 模式 | 用途 | 覆盖输入 |
 | --- | --- | --- |
 | tts | 完整口播主音频 | 2.audio 参考音色，12.prompt 文案，13.prompt 语气 |

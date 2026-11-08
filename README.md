@@ -4,6 +4,31 @@
 
 **当前为测试版：代码与离线流程已实现，当前账号的工作流读取和素材上传已验证；H3 首段、续接及完整成片尚未实际生成成功。** 本仓库不附带工作流账号权限、API 密钥、模型权重或生产素材。简单工作台尚未实现，当前入口是 Skill 与 CLI。
 
+## 调用关系
+
+```mermaid
+flowchart TD
+    A[人物图、场景图、产品图和批准文案] --> B[本地 Skill / Python CLI]
+    V[参考声音] --> T[RunningHub Drama3 工作流：生成主音频]
+    B --> T
+    T --> R[试听并批准完整配音]
+    E[已有完整配音] --> R
+    R --> S[本地按语义和实际音频切分]
+    S --> P[展示本段素材、提示词和付费预览]
+    P --> C[用户批准本次生成]
+    C --> H[RunningHub 工作流 API]
+    H --> F[首段：H3 基础流，三张参考图与本段音频]
+    H --> I[后续段：H3 续接流，已通过的尾帧与下一段音频]
+    F --> Q[播放并审核片段]
+    I --> Q
+    Q --> N{还有下一段？}
+    N -->|有：提取已通过片段尾帧| P
+    N -->|没有：全部片段通过| M[本地 FFmpeg 合成，保留完整主音频]
+    M --> Z[播放并审核最终 MP4]
+```
+
+H3 两条流在 RunningHub 的 ComfyUI 环境加载模型权重并生成视频，Skill 调用的是工作流 API。本仓库没有直连 MiniMax 官方视频 API。MiniMax Speech 等其他工具产出的音频可作为“已有完整配音”导入；内置 TTS 路线是 Drama3 工作流。云端所需模型和节点见[依赖清单](references/setup.md#导入后检查哪些依赖)。
+
 ## 安装与开始
 
 将本仓库整个目录作为一个名为 `talking-head-video` 的 Skill 安装到 Agent 的技能目录。入口为 [SKILL.md](SKILL.md)，目录内脚本和 references 需一起保留。需要 Python 3.9+ 与 FFmpeg；没有 FFmpeg 时可用：
