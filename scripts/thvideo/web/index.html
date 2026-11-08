@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>口播 · 审片台</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="/">口播<span>审片台</span></a><span class="local">本地任务 · 只读</span><button id="refresh" type="button">刷新任务</button></header>
+  <div class="layout">
+    <aside class="sidebar"><div class="section-label">制作项目</div><nav id="tasks" aria-label="任务列表"></nav><div class="side-note">由 Skill 创建与推进任务，<br>在这里查看素材与产物。</div></aside>
+    <main id="main"><p class="empty">正在读取本地任务…</p></main>
+    <aside class="inspector"><div class="section-label">接入状态</div><div id="environment"></div><div id="progress"></div></aside>
+  </div>
+  <div id="notice" role="status" aria-live="polite"></div>
+</body>
+</html>

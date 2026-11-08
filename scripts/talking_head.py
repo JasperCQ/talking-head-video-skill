@@ -18,6 +18,8 @@ def parser():
     sub = p.add_subparsers(dest="command", required=True)
     sub.add_parser("doctor", help="离线检查配置与媒体工具，不输出密钥")
     sub.add_parser("list", help="列出本地任务")
+    serve = sub.add_parser("serve", help="启动本机只读审片工作台，不会提交生成或修改审核")
+    serve.add_argument("--port", type=int, default=0, help="监听端口；默认由系统分配")
     create = sub.add_parser("create", help="从本地 JSON 任务草稿创建任务")
     create.add_argument("--plan", required=True, type=Path)
     for name in ("show", "use-audio", "assemble", "verify-portrait"):
@@ -68,6 +70,9 @@ def main(argv=None):
     name = args.command
     if name == "doctor":
         return service.doctor()
+    if name == "serve":
+        from thvideo.workbench import serve
+        return serve(service, args.port)
     if name == "list":
         return [{"id": t["id"], "title": t["title"], "status": service.view(t)["status"]} for t in service.store.list()]
     if name == "create":
