@@ -162,6 +162,17 @@ class PipelineTests(unittest.TestCase):
         self.assertGreater(max(map(abs, samples)), 3000)
         self.assertEqual(len(self.hub.created), 3)
 
+    def test_assembly_keeps_24fps_with_fractional_audio_cuts(self):
+        audio = self.root / "fractional.wav"
+        with wave.open(str(audio), "wb") as out:
+            out.setparams((1, 2, 8000, 0, "NONE", "not compressed"))
+            out.writeframes(b"\0\0" * 51827)  # 6.478375 seconds.
+        segments = [{"clip": str(self.clip), "duration_seconds": length}
+                    for length in (2.978396, 3.499979)]
+        result = media.assemble(segments, audio, self.root / "fractional.mp4")
+        self.assertEqual(result["fps"], 24)
+        self.assertAlmostEqual(result["duration_seconds"], media.duration(audio), delta=0.1)
+
     def test_ambiguous_submit_never_recreates_and_can_recover(self):
         self.create(); self.approve("content")
         self.hub.fail_submit = True

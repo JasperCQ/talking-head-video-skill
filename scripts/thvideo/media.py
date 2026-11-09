@@ -109,7 +109,7 @@ def assemble(segments, audio, output):
                               f"setpts=PTS-STARTPTS[v{i}]" for i, segment in enumerate(segments))
     graph = normalizations + ";" + streams + f"concat=n={len(clips)}:v=1:a=0[outv]"
     run(["-y", *inputs, "-i", audio, "-filter_complex", graph, "-map", "[outv]",
-         "-map", f"{len(clips)}:a:0", "-c:v", "libx264", "-pix_fmt", "yuv420p",
+         "-map", f"{len(clips)}:a:0", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", "24",
          "-c:a", "aac", "-movflags", "+faststart", "-t", f"{duration(audio):.6f}", output])
     info = video_info(output)
     if abs(info["duration_seconds"] - duration(audio)) > 0.1:
