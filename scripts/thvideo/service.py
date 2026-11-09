@@ -413,3 +413,27 @@ class Service:
         return {"ffmpeg": binary, "api_key_present": key_present, "workflows": workflows,
                 "portrait_verified": {mode: self._portrait_verified(mode) for mode in ("fl-base", "fl-i2v")},
                 "note": "本检查离线运行；配置存在不代表接口或生成质量已验证。"}
+
+    def setup(self, with_tts=False):
+        checks = self.doctor()
+        result = {"checks": checks, "inspections": {}}
+        if not checks["ffmpeg"]:
+            return {**result, "status": "needs_runtime",
+                    "message": "进入首次配置：请由 Agent 准备 FFmpeg，再继续连接 RunningHub。"}
+        if not checks["api_key_present"]:
+            return {**result, "status": "needs_authorization",
+                    "message": "进入首次配置：请在本机安全授权自己的 RunningHub API Key，并确保账号有可用额度。"
+                               "视频生成配置已内置，授权后由 Agent 检查服务。请不要把 Key 发到聊天。"}
+        modes = ("fl-base", "fl-i2v", "tts") if with_tts else ("fl-base", "fl-i2v")
+        for mode in modes:
+            try:
+                result["inspections"][mode] = {"ok": True, **self.provider.inspect(mode)}
+            except UserError as exc:
+                result["inspections"][mode] = {"ok": False, "error": str(exc)}
+        if not all(item["ok"] for item in result["inspections"].values()):
+            return {**result, "status": "needs_service_attention",
+                    "message": "内置生成服务检查未通过。请由 Agent 排查授权、平台权限或服务配置；"
+                               "不要要求用户自行寻找或设计 H3 工作流，也不能报告已接通。"}
+        return {**result, "status": "connected",
+                "message": "本次所需生成服务已通过只读结构检查，可以继续整理素材和文案。"
+                           "未上传素材或提交生成；额度、云端模型和实际生成效果仍需按本次方案确认。"}

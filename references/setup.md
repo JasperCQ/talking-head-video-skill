@@ -4,22 +4,24 @@
 
 这是 Agent 的接入操作说明。用户安装后可直接说“使用 talking-head-video，带我完成首次配置并制作数字人口播视频”，不必自己编辑 JSON、寻找安装目录或执行下文命令。
 
-1. **检查已有环境。** 定位本 Skill 安装目录，选择可用的 Python 3.9+ 解释器，执行 `doctor`。没有 Python 时先帮助用户准备适合当前系统的解释器；缺少 FFmpeg 时可在所选 Python 环境安装 `imageio-ffmpeg`。按当前环境权限执行，不擅自修改系统 Python 或覆盖其他项目依赖。
-2. **确定配音路线。** 有完整配音就直接导入，沿用已经试听采用的音频；没有时收集参考声音并说明内置 Drama3 路线尚未完成真实生成验证。不默认要求用户配置三条工作流，不把其他工具的配音当作 Drama3 验证结果。
-3. **连接自己的 RunningHub。** 说明需要可用账号、对应 Key 和付费额度。已有工作流时让用户提供链接或 ID，由 Agent 提取和核对。没有工作流时，使用本包的 H3 基础流与续接流模板，按下文指导导入用户的工作区；有浏览器能力时协助操作，没有时只列出需要用户在平台完成的具体步骤。用户处理登录或权限请求。模板不包含模型和节点实现；目标环境缺依赖时说明具体缺项，不能声称导入即能推理。
-4. **由 Agent 保存非敏感配置。** 参考 `config.example.json`，将用户确认的工作流 ID 写入默认配置位置（见下文）；先读取已有配置，仅补充或更新本次确认的字段，保留无关字段和仍适用的校准证据。新工作流不伪造校准证据。草稿、素材路径和切点也由 Agent 后续管理，不要求用户手写。
-5. **让 Key 在实际运行进程中可用。** 优先使用已经授权的环境变量或可信密钥管理器；缺少时说明如何在用户本机安全授权。不要让用户把 Key 发到聊天、写入配置 JSON 或仓库；不要回显已有密钥。另一终端配置不等于 Agent 进程已继承，须重新执行 `doctor` 确认，检查只显示是否存在。
-6. **只读核验后进入制作。** 对本次所需模式执行 `inspect`，告诉用户哪些已通过、哪些仍缺。随后收集本次素材、展示内容和每次生成预览，取得对应付费批准才运行校准或生产。不为“测试连接”自动提交付费任务。已接通的账号后续调用直接沿用配置，不重复首次接入。
+1. **立即进入接入检查。** 定位本 Skill 安装目录，选择可用的 Python 3.9+ 解释器，执行 `setup`。没有 Python 时先协助准备；返回 `needs_runtime` 时协助安装 FFmpeg，例如在所选 Python 环境安装 `imageio-ffmpeg`。按当前环境权限操作，不擅自修改系统 Python 或覆盖其他项目依赖。
+2. **缺少账号授权时先引导授权。** `needs_authorization` 表示当前进程没有 Key，此时程序不发网络请求。向用户说明“我先带你连接 RunningHub，视频生成配置已内置，不需要你准备 H3 工作流”。引导用户登录[RunningHub](https://www.runninghub.cn/)，在平台的 API Key 管理处选择适用的 Key 和额度，并在本机安全授权。用户暂时不接入时才转为离线整理素材；不要直接索要素材来回避配置。
+3. **让 Key 在实际运行进程中可用。** 优先使用已授权的环境变量或可信密钥管理器；缺少时按当前 Agent 环境说明安全授权方法。不要让用户把 Key 发到聊天、写入配置 JSON 或仓库，不回显密钥。另一终端设置不等于当前 Agent 已继承；必要时指导重新启动到能继承授权的环境，再执行 `setup`，不要把“用户说已设置”视为检查通过。
+4. **自动采用并检查内置服务。** `references/default-workflows.json` 是默认工作流 ID 的唯一来源，`load_config` 自动加载，无需用户复制配置文件或提供 ID。非空环境变量优先，其次为已有非空配置，最后为内置值；旧版本的空字符串也会回到内置值。`setup` 只读检查基础流和续接流。已有完整配音跳过 TTS；选择内置参考音色路线后再用 `setup --with-tts`，并说明 Drama3 尚未完成真实配音验证。
+5. **接入失败由 Agent 排查。** `needs_service_attention` 时查看 `inspections` 中的错误。先核查 Key 是否适用于工作流 API、是否有平台权限及服务是否仍符合契约，不能只看到 Key 存在就说已接通。不要问用户“有没有 H3 工作流”或要求另找链接 / ID。内置 ID 来自交接包的来源登记；当前账号的视频样片已通过，但这不代表所有其他账号都有访问权。若平台确需在用户工作区保存副本，由 Agent 使用下文模板协助导入、取得新 ID 并只读核验；只请用户处理登录或平台权限操作。没有可用的平台操作工具时，明确说明当前 Agent 无法完成服务接入并暂停生成，不把重建工作流的任务交给用户，也不声称已经自动完成。
+6. **通过检查后才推进制作。** `connected` 只代表本次所需服务的只读结构检查通过，不证明额度、模型可运行或画面质量。随后收集本次素材、展示内容和付费预览，取得本次付费批准才运行校准或生产，不为测试连接自动生成。沿用已有非敏感配置；如需写入自建副本 ID，先读取原配置，只更新对应字段，保留无关字段与仍适用证据；新 ID 不继承旧校准证据。
 
-面向用户只报告必要结果，例如“运行环境已准备；还需要你登录 RunningHub 并授权 Key。之后我会检查两条视频工作流，再展示第一段生成方案。”下面是 Agent 执行时查询的具体依赖、配置位置和命令。
+首次用户回复示例：“我先带你连接 RunningHub 账号。视频生成和续接的配置由 Skill 提供，你不用准备工作流。接下来需要在本机授权你的 API Key，请不要把密钥发到聊天里。”以下为 Agent 排障或维护时查阅的技术细节，不是默认用户配置清单。
 
 ## 运行环境
 
 运行环境：Python 3.9+，FFmpeg（包含 libx264）。若系统没有 FFmpeg，可执行 `python3 -m pip install imageio-ffmpeg`。除此之外生产程序只用 Python 标准库。运行回归测试同样需要 FFmpeg。
 
-## 三个工作流
+## 内部工作流与高级维护
 
-将本目录下 `workflows/h3-base.json`、`workflows/h3-continuation.json` 导入自己的 RunningHub 工作区；需要从参考声音生成配音时，再导入 `workflows/drama3-tts.json`。已有完整配音可通过任务的 `assets.audio` 导入，不需要 TTS 工作流。确认所需自定义节点与模型在所用环境可用，再保存为自己有调用权限的工作流。导出来自已有交接包，已替换样本文案和输入文件名，不包含模型权重和自定义节点实现。
+默认路线直接使用内置 ID，不要求用户导入以下文件。本节仅在内置服务不可访问且需要保存用户工作区副本，或用户主动要求自定义时使用，由 Agent 执行。ID 不包含账号凭据；内置 ID 本身也不授予访问权限。不能用来源登记代替当前账号的 `setup` / `inspect`。
+
+需要副本时，将本目录下 `workflows/h3-base.json`、`workflows/h3-continuation.json` 导入用户的 RunningHub 工作区；需要从参考声音生成配音时，再导入 `workflows/drama3-tts.json`。已有完整配音可通过任务的 `assets.audio` 导入。确认自定义节点与模型在云端可用，再保存为用户有调用权限的工作流。导出来自已有交接包，已替换样本文案和输入文件名，不包含模型权重和自定义节点实现。
 
 这些是 ComfyUI UI 格式导出；不是 API 图，也不是已部署服务。导入后缺模型、缺节点、版本不同或 API 图变化都可能导致无法运行。不要改节点 ID 来“修好”检查；应查明差异后同步适配器和契约，并重新验证。
 
@@ -44,19 +46,20 @@ Drama3 的参考声音还经过 `R2T2GGUFLoader` → `R2T2Transcribe` 转写，�
 | fl-base | 人物、场景、产品参考生视频 | 72/84/85.image，74.audio，73.value 秒数，79.prompt，78 竖屏尺寸 |
 | fl-i2v | 上一段尾帧续接 | 86.image 尾帧，74.audio，73.value 秒数，79.prompt，78 竖屏尺寸 |
 
-复制 Skill 根目录的 `config.example.json` 到 `~/.config/talking-head-video/config.json`，填所需模式的**自己的**纯数字工作流 ID；使用已有配音时可留空 `tts`。`portrait_evidence` 初始为空，由实际校准样片登记，不手工填写。
+仅需覆盖默认值时，由 Agent 在 `~/.config/talking-head-video/config.json` 的 `workflows` 中写入已核验副本的纯数字 ID。省略或留空的模式自动采用内置值；不要为首次使用创建一份空配置。`portrait_evidence` 初始为空，由实际校准样片登记，不手工填写。
 
 密钥通过启动进程的 `RUNNINGHUB_API_KEY` 提供。请在自己的终端或可信的密钥管理器配置，不要发送到聊天或写入仓库。Shell 示例（值自行填写）：
 
 ```sh
 export RUNNINGHUB_API_KEY='自己的密钥'
 python3 scripts/talking_head.py doctor
+python3 scripts/talking_head.py setup
 python3 scripts/talking_head.py inspect --mode tts
 python3 scripts/talking_head.py inspect --mode fl-base
 python3 scripts/talking_head.py inspect --mode fl-i2v
 ```
 
-上述命令从 Skill 根目录运行；使用已有配音时省略 `inspect --mode tts`。`doctor` 中 TTS 未配置不妨碍已有配音的视频路线。MiniMax Speech 等其他工具产出的配音也作为 `assets.audio` 导入；当前内置 TTS 提交器只支持 Drama3。
+上述命令从 Skill 根目录运行；使用已有配音时省略 `inspect --mode tts`。`doctor` 离线显示的是 ID 格式已配置，不能据此说账号接通；使用 `setup` 的只读检查结果。MiniMax Speech 等其他工具产出的配音也作为 `assets.audio` 导入；当前内置 TTS 提交器只支持 Drama3。
 
 选择密钥时区分会员积分与钱包余额。2026-11-08 核对[官方接入说明](https://www.runninghub.cn/runninghub-api-doc-cn/)及控制台“API KEY调用权益对比”：工作流 API 支持消费级-会员、企业级-共享和企业级-独占 Key；消费级-会员的运行时长费扣积分，企业级-共享扣钱包。若工作流内部另有模型 API 或 LLM API 节点，其调用费仍可能扣钱包。会员积分不能直接当作共享 API 钱包余额。标准模型接口（包括另外生成 MiniMax Speech 配音）只支持企业级-共享 Key。具体套餐、机型权限与费率以自己账号的当前权益为准；更换 Key 后先只读 `inspect`，不能仅凭页面余额认定工作流可运行。
 

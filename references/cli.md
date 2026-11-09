@@ -4,6 +4,8 @@
 
 ```text
 TH doctor
+TH setup                              # 首次接入；缺 Key 时引导授权，有 Key 时只读检查内置视频服务
+TH setup --with-tts                   # 本次还需内置参考音色配音时检查
 TH list
 TH create --plan /path/plan.json
 TH show TASK

@@ -74,7 +74,7 @@ class InstallationTests(unittest.TestCase):
     def test_recorded_audio_reaches_video_preview_from_copied_skill(self):
         doctor = self.cli("doctor")
         self.assertFalse(doctor["api_key_present"])
-        self.assertTrue(all(not mode["configured"] for mode in doctor["workflows"].values()))
+        self.assertTrue(all(mode["configured"] for mode in doctor["workflows"].values()))
         self.assertIsNotNone(doctor["ffmpeg"])
         self.config.parent.mkdir()
         self.config.write_text(json.dumps({"workflows": {"fl-base": "123", "fl-i2v": "456"}}),
@@ -112,12 +112,24 @@ class InstallationTests(unittest.TestCase):
         self.assertIsNone(task["final"])
         self.assertEqual(self.cli("list")[0]["id"], task_id)
 
-    def test_reference_voice_reaches_unconfigured_tts_preview(self):
+    def test_reference_voice_reaches_builtin_tts_preview(self):
         task_id = self.create("voice")
         self.approve(task_id, "content")
         preview = self.cli("preview", task_id)
-        self.assertFalse(preview["configured"])
+        self.assertTrue(preview["configured"])
+        defaults = json.loads((self.skill / "references/default-workflows.json").read_text(encoding="utf-8"))
+        self.assertEqual(preview["operation"]["workflow_id"], defaults["tts"])
         self.assertEqual(preview["operation"]["mode"], "tts")
         self.assertEqual(preview["operation"]["text"], "这是安装验证。接下来检查分段。")
         self.assertEqual(set(preview["operation"]["files"]), {"voice"})
         self.assertEqual(self.cli("show", task_id)["operations"], {})
+
+    def test_fresh_install_enters_account_setup_without_config_or_network(self):
+        setup = self.cli("setup")
+        self.assertEqual(setup["status"], "needs_authorization")
+        self.assertIn("视频生成配置已内置", setup["message"])
+        self.assertFalse(setup["checks"]["api_key_present"])
+        self.assertEqual(setup["inspections"], {})
+        self.assertTrue(all(mode["configured"] for mode in setup["checks"]["workflows"].values()))
+        self.assertFalse(self.config.exists())
+        self.assertEqual(self.cli("list"), [])

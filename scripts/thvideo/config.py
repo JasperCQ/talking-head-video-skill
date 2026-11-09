@@ -10,6 +10,8 @@ class UserError(Exception):
 MODES = ("tts", "fl-base", "fl-i2v")
 CONFIG_PATH = Path.home() / ".config/talking-head-video/config.json"
 DATA_PATH = Path.home() / ".local/share/talking-head-video"
+DEFAULT_WORKFLOWS = json.loads(
+    (Path(__file__).resolve().parents[2] / "references/default-workflows.json").read_text(encoding="utf-8"))
 
 
 def load_config(path=None):
@@ -22,17 +24,16 @@ def load_config(path=None):
     workflows = config.setdefault("workflows", {})
     for mode in MODES:
         value = os.environ.get("TALKING_HEAD_WORKFLOW_" + mode.upper().replace("-", "_"))
-        if value:
-            workflows[mode] = value.strip()
-        elif mode in workflows:
-            workflows[mode] = str(workflows[mode] or "").strip()
+        workflows[mode] = (str(value or "").strip()
+                           or str(workflows.get(mode) or "").strip()
+                           or DEFAULT_WORKFLOWS[mode])
     return config
 
 
 def workflow_id(config, mode):
     value = str(config.get("workflows", {}).get(mode) or "")
     if mode not in MODES or not value.isascii() or not value.isdigit():
-        raise UserError(f"请配置 workflows.{mode} 为你自己的纯数字工作流 ID。")
+        raise UserError(f"内部生成配置 workflows.{mode} 无效，请由 Agent 检查配置或恢复内置默认值。")
     return value
 
 

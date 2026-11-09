@@ -17,6 +17,8 @@ def parser():
     p.add_argument("--data-dir", type=Path, default=DATA_PATH)
     sub = p.add_subparsers(dest="command", required=True)
     sub.add_parser("doctor", help="离线检查配置与媒体工具，不输出密钥")
+    setup = sub.add_parser("setup", help="首次接入：检查环境和授权，只读核验内置服务，不上传或生成")
+    setup.add_argument("--with-tts", action="store_true", help="还需内置参考音色配音时检查 TTS 服务")
     sub.add_parser("list", help="列出本地任务")
     serve = sub.add_parser("serve", help="启动本机只读审片工作台，不会提交生成或修改审核")
     serve.add_argument("--port", type=int, default=0, help="监听端口；默认由系统分配")
@@ -70,6 +72,8 @@ def main(argv=None):
     name = args.command
     if name == "doctor":
         return service.doctor()
+    if name == "setup":
+        return service.setup(args.with_tts)
     if name == "serve":
         from thvideo.workbench import serve
         return serve(service, args.port)

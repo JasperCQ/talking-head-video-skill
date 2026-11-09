@@ -11,11 +11,11 @@ import tempfile
 import unittest
 import wave
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from thvideo import media
-from thvideo.config import UserError, load_config
+from thvideo.config import DEFAULT_WORKFLOWS, UserError, load_config, workflow_id
 from thvideo.provider import CONTRACTS, RunningHub, RunningHubError, node_info, validate_graph, validate_prompt
 from thvideo.service import Service
 from thvideo.store import Store, fingerprint
@@ -304,6 +304,52 @@ class PipelineTests(unittest.TestCase):
 
 
 class ContractTests(unittest.TestCase):
+    def test_builtin_config_fills_absent_and_legacy_empty_values_without_writing(self):
+        clean_env = {key: value for key, value in os.environ.items()
+                     if not key.startswith("TALKING_HEAD_WORKFLOW_")}
+        with tempfile.TemporaryDirectory() as temp, patch.dict(os.environ, clean_env, clear=True):
+            path = Path(temp) / "config.json"
+            self.assertEqual(load_config(path)["workflows"], DEFAULT_WORKFLOWS)
+            self.assertFalse(path.exists())
+            path.write_text('{"workflows":{"tts":"","fl-base":"123","fl-i2v":" "},'
+                            '"portrait_evidence":{"fl-base":{"workflow_id":"123"}},"extra":true}')
+            before = path.read_bytes()
+            config = load_config(path)
+            self.assertEqual(config["workflows"], {**DEFAULT_WORKFLOWS, "fl-base": "123"})
+            self.assertEqual(config["portrait_evidence"]["fl-base"]["workflow_id"], "123")
+            self.assertTrue(config["extra"])
+            self.assertEqual(path.read_bytes(), before)
+            path.write_text('{"workflows":{"fl-base":"invalid"}}')
+            with self.assertRaises(UserError):
+                workflow_id(load_config(path), "fl-base")
+
+    def test_setup_only_inspects_needed_services_after_authorization(self):
+        provider = Mock()
+        provider.inspect.side_effect = lambda mode: {"mode": mode, "workflow_id": "123", "nodes": 20}
+        service = Service(None, {}, provider)
+        checks = {"ffmpeg": "ffmpeg", "api_key_present": False}
+        with patch.object(service, "doctor", return_value=checks):
+            self.assertEqual(service.setup()["status"], "needs_authorization")
+            provider.inspect.assert_not_called()
+            checks["api_key_present"] = True
+            result = service.setup()
+            self.assertEqual(result["status"], "connected")
+            self.assertEqual([call.args[0] for call in provider.inspect.call_args_list], ["fl-base", "fl-i2v"])
+            provider.reset_mock()
+            self.assertEqual(service.setup(with_tts=True)["status"], "connected")
+            self.assertEqual([call.args[0] for call in provider.inspect.call_args_list], ["fl-base", "fl-i2v", "tts"])
+            provider.reset_mock()
+            provider.inspect.side_effect = UserError("模拟：无访问权限")
+            result = service.setup()
+            self.assertEqual(result["status"], "needs_service_attention")
+            self.assertFalse(any(item["ok"] for item in result["inspections"].values()))
+            provider.reset_mock()
+            checks["ffmpeg"] = None
+            self.assertEqual(service.setup()["status"], "needs_runtime")
+            provider.inspect.assert_not_called()
+        provider.upload.assert_not_called()
+        provider.submit.assert_not_called()
+
     def test_error_preserves_numeric_code_without_echoing_server_secrets(self):
         hub = RunningHub({})
         for code in (416, 605, "DO_NOT_ECHO_SECRET", {"secret": "DO_NOT_ECHO_SECRET"}):
